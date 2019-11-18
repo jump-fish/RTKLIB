@@ -58,7 +58,8 @@ SOURCES += rtkcmn.c \
     rcv/rt17.c \
     rcv/septentrio.c \
     rcv/skytraq.c \
-    rcv/ss2.c \
+#   2019-11-18 @tt, the ss2.c is not found.
+#    rcv/ss2.c \
     rcv/ublox.c \
     rcv/tersus.c \
     rcv/comnav.c \
