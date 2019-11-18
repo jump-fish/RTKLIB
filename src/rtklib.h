@@ -534,6 +534,13 @@ extern "C" {
 #define FILEPATHSEP '/'
 #endif
 
+/* 2019-08-12 @tt, global defination for urgent message. */
+#define UGT_UINI            (0x00)
+#define UGT_INIT            (0x80)
+#define UGT_FILL            (0x81)
+#define UGT_DONE            (0x82)
+#define UGT_BUSY            (0x83)
+
 /* type definitions ----------------------------------------------------------*/
 
 #ifdef WIN32
@@ -1438,6 +1445,56 @@ typedef struct {        /* imu type */
     unsigned char buff[256]; /* imu data buffer */
 } imu_t;
 
+/* 2019-08-12 @tt, create urgent msg command for 433 urgent control. */
+#if 0
+typedef struct {
+    unsigned char hl;   /* head low byte */
+    unsigned char hh;   /* head high byte */
+    unsigned char pl;   /* payload len */
+    unsigned char ct;   /* command type */
+    unsigned char * bf; /* buffer of payload */
+    unsigned int cc;    /* urgent payload crc */
+} urgent_t;
+#else
+typedef struct {
+    unsigned char h0;   /* head byte 0. */
+    unsigned char h1;   /* head byte 1. */
+    unsigned char h2;   /* head byte 2. */
+    unsigned char h3;   /* head byte 3. */
+    unsigned char h4;   /* head byte 4. */
+    unsigned char h5;   /* head byte 5. */
+    unsigned char h6;   /* head byte 6. */
+    unsigned char h7;   /* head byte 7. */
+    unsigned char h8;   /* head byte 8. */
+    unsigned char h9;   /* head byte 9. */
+    unsigned char pl;   /* payload len */
+    unsigned char ct;   /* command type */
+    unsigned char * bf; /* buffer of payload */
+    unsigned int cc;    /* urgent payload crc */
+} urgent_t;
+#endif
+
+/* 2019-10-14 @tt, create for vehicle protocol dd. */
+#define URGENT_VEHICLE_PROT_DD_HEADER           (0xDD)
+#define URGENT_VEHICLE_PROT_D5_HEADER           (0xD5)
+#define URGENT_VEHICLE_PROT_DD_FIX_SIZE         (40)
+#define URGENT_VEHICLE_PROT_DD_LEN_VALUE        (37)
+#pragma pack(1)
+typedef struct {
+    unsigned char head_dd;
+    unsigned char len;
+    unsigned short counter;
+    unsigned short address;
+    unsigned char head_d5;
+    unsigned char crc_d5;
+    unsigned int timstmp;
+    unsigned short ctrltype;
+    unsigned char pld_d5[24];
+    unsigned char res;
+    unsigned char crc_dd;
+} urgent_prot_dd_d5_t;
+#pragma pack()
+
 typedef void fatalfunc_t(const char *); /* fatal callback function type */
 
 /* global variables ----------------------------------------------------------*/
@@ -1954,6 +2011,17 @@ EXPORT int lexeph2pos(gtime_t time, int sat, const nav_t *nav, double *rs,
                       double *dts, double *var);
 EXPORT int lexioncorr(gtime_t time, const nav_t *nav, const double *pos,
                       const double *azel, double *delay, double *var);
+
+/* 2019-08-12 @tt, urgent message functions ----------------------------------*/
+EXPORT unsigned int ugt_getstate(void);
+EXPORT int ugt_send(void);
+EXPORT int ugt_fill(unsigned char cmd_type, unsigned char * cmd_buf, unsigned int buf_len);
+EXPORT int ugt_initialize(stream_t * stream);
+EXPORT int ugt_deinitialize(void);
+EXPORT int ugt_getversion(unsigned int * version);
+
+/* 2019-10-14 @tt, urgent protocol dd and d5 assemble api functions ----------------------------------*/
+EXPORT void ugt_prot_dd_d5_assemble_default(unsigned short addr, unsigned char rw, unsigned short reg, unsigned char * pld, unsigned int pld_len, unsigned char * result);
 
 /* application defined functions ---------------------------------------------*/
 extern int showmsg(char *format,...);

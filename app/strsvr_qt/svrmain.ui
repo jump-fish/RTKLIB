@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>508</width>
-    <height>321</height>
+    <height>409</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -77,6 +77,13 @@
          <string/>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="UgtVersion">
+           <property name="text">
+            <string>version:</string>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QLabel" name="Time">
            <property name="enabled">
@@ -425,12 +432,12 @@
            </item>
            <item>
             <property name="text">
-             <string>TCP Client</string>
+             <string>UDP Client</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>TCP Server</string>
+             <string>UDP Server</string>
             </property>
            </item>
            <item>
@@ -451,6 +458,16 @@
            <item>
             <property name="text">
              <string>HTTP</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TCP Client</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TCP Server</string>
             </property>
            </item>
           </widget>
@@ -707,12 +724,12 @@
            </item>
            <item>
             <property name="text">
-             <string>TCP Client</string>
+             <string>UDP Client</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>TCP Server</string>
+             <string>UDP Server</string>
             </property>
            </item>
            <item>
@@ -723,6 +740,16 @@
            <item>
             <property name="text">
              <string>File</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TCP Client</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TCP Server</string>
             </property>
            </item>
           </widget>
@@ -966,12 +993,12 @@
            </item>
            <item>
             <property name="text">
-             <string>TCP Client</string>
+             <string>UDP Client</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>TCP Server</string>
+             <string>UDP Server</string>
             </property>
            </item>
            <item>
@@ -982,6 +1009,16 @@
            <item>
             <property name="text">
              <string>File</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TCP Client</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TCP Server</string>
             </property>
            </item>
           </widget>
@@ -1225,12 +1262,12 @@
            </item>
            <item>
             <property name="text">
-             <string>TCP Client</string>
+             <string>UDP Client</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>TCP Server</string>
+             <string>UDP Server</string>
             </property>
            </item>
            <item>
@@ -1241,6 +1278,16 @@
            <item>
             <property name="text">
              <string>File</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TCP Client</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>TCP Server</string>
             </property>
            </item>
           </widget>
@@ -1435,7 +1482,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+            <iconset resource="strsvr_qt.qrc">
              <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
            </property>
            <property name="flat">
@@ -1548,7 +1595,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
+            <iconset resource="strsvr_qt.qrc">
              <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
            </property>
            <property name="flat">
@@ -1623,97 +1670,185 @@
    </item>
    <item>
     <widget class="QWidget" name="widget" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="BtnStart">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Start</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rtknavi_qt/rtknavi_qt.qrc">
-          <normaloff>:/buttons/start.bmp</normaloff>:/buttons/start.bmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="BtnStop">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>S&amp;top</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rtknavi_qt/rtknavi_qt.qrc">
-          <normaloff>:/buttons/stop2.bmp</normaloff>:/buttons/stop2.bmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="BtnOpt">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Options...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../rtkpost_qt/rtkpost_qt.qrc">
-          <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="BtnExit">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>E&amp;xit</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-       </widget>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QPushButton" name="BtnStart">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>&amp;Start</string>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>:/buttons/start.bmp</normaloff>:/buttons/start.bmp</iconset>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="BtnStop">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>S&amp;top</string>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>:/buttons/stop2.bmp</normaloff>:/buttons/stop2.bmp</iconset>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="BtnOpt">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>&amp;Options...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="strsvr_qt.qrc">
+              <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="BtnExit">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>E&amp;xit</string>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QLabel" name="LabelR">
+              <property name="text">
+               <string>R:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="LER"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QLabel" name="LabelG">
+              <property name="text">
+               <string>G:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="LEG"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QLabel" name="LabelB">
+              <property name="text">
+               <string>B:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="LEB"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
+             <widget class="QLabel" name="LabelID">
+              <property name="text">
+               <string>ID:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="LEID"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="RBLand">
+            <property name="text">
+             <string>降落</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="RBRtl">
+            <property name="text">
+             <string>返航</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="RBStopPropeller">
+            <property name="text">
+             <string>停桨</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="BtnLedTest">
+            <property name="text">
+             <string>LedTest</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QPushButton" name="BtnUrgent">
+          <property name="text">
+           <string>Urgent</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -1745,8 +1880,7 @@
   <addaction name="MenuExit"/>
  </widget>
  <resources>
-  <include location="../rtkpost_qt/rtkpost_qt.qrc"/>
-  <include location="../rtknavi_qt/rtknavi_qt.qrc"/>
+  <include location="strsvr_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

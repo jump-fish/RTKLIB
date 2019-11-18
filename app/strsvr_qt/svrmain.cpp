@@ -96,6 +96,36 @@ MainForm::MainForm(QWidget *parent)
     trayMenu->addAction(MenuExit);
 
     TrayIcon->setContextMenu(trayMenu);
+    /* 2019-08-30 @tt, when initialize and show the form, the stop button should not be visable. */
+    BtnStop->setVisible(false);
+
+    /* 2019-08-30 @tt, get the urgent version here. */
+    unsigned int urgent_version = 0;
+    if(!ugt_getversion(&urgent_version))
+    {
+        /* display the urgent version in the main form. */
+        QString string = "version:";
+        //char temp[4] = { 0 };
+        unsigned char temp[8] = { 0 };
+        temp[0] = (urgent_version >> 24) & 0xFF;
+        temp[1] = '.';
+        temp[2] = (urgent_version >> 16) & 0xFF;
+        temp[3] = '.';
+        temp[4] = (urgent_version >> 8) & 0xFF;
+        temp[5] = '.';
+        temp[6] = urgent_version & 0xFF;
+        temp[7] = '\0';
+        string.append((const char *)temp);
+        //string.sprintf("version:%x",temp);
+        UgtVersion->setText(string);
+    }
+
+    /* 2019-10-14 @tt, initialize the radio button for vehicle urgent land. */
+    Qbg.addButton(RBLand, 0);
+    Qbg.addButton(RBRtl, 1);
+    /* 2019-10-30 @tt, add urgent stop propeller operation. */
+    Qbg.addButton(RBStopPropeller, 2);
+    RBLand->setChecked(true);
 
     svrOptDialog = new SvrOptDialog(this);
     console = new Console(this);
@@ -110,6 +140,7 @@ MainForm::MainForm(QWidget *parent)
     connect(BtnInput,SIGNAL(clicked(bool)),this,SLOT(BtnInputClick()));
     connect(BtnStart,SIGNAL(clicked(bool)),this,SLOT(BtnStartClick()));
     connect(BtnStop,SIGNAL(clicked(bool)),this,SLOT(BtnStopClick()));
+    connect(BtnUrgent,SIGNAL(clicked(bool)),this,SLOT(BtnUrgentClick()));   // 2019-08-09 @tt, add urgent command.
     connect(BtnOpt,SIGNAL(clicked(bool)),this,SLOT(BtnOptClick()));
     connect(BtnCmd,SIGNAL(clicked(bool)),this,SLOT(BtnCmdClick()));
     connect(BtnAbout,SIGNAL(clicked(bool)),this,SLOT(BtnAboutClick()));
@@ -215,6 +246,12 @@ void MainForm::BtnExitClick()
 void MainForm::BtnStartClick()
 {
     SvrStart();
+}
+
+// callback on button-urgent ------------------------------------------------
+void MainForm::BtnUrgentClick()
+{
+    SvrUrgent();
 }
 // callback on button-stop --------------------------------------------------
 void MainForm::BtnStopClick()
@@ -527,11 +564,15 @@ void MainForm::SvrStart(void)
 {
     strconv_t *conv[3]={0};
     static char str[4][1024];
+    /* 2019-08-30 @tt, pending UDP Client and UDP Server stream type. */
     int itype[]={
-        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP
+        STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPCLI,STR_FILE,STR_FTP,STR_HTTP,STR_UDPCLI,STR_UDPSVR
     };
+    /* 2019-08-30 @tt, pending UDP Client and UDP Server stream type. */
     int otype[]={
-        STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE
+        /* 2019-10-14 @tt, change the sequence of the stream, since there is no udp ui, we use tcp ui to do udp stream. */
+        //STR_NONE,STR_SERIAL,STR_TCPCLI,STR_TCPSVR,STR_NTRIPSVR,STR_FILE,STR_UDPCLI,STR_UDPSVR
+        STR_NONE,STR_SERIAL,STR_UDPCLI,STR_UDPSVR,STR_NTRIPSVR,STR_FILE,STR_TCPCLI,STR_TCPSVR
     };
     int ip[]={0,1,1,1,2,3,3},strs[4]={0},opt[7]={0},n;
     char *paths[4],filepath[1024],buff[1024];
@@ -611,6 +652,57 @@ void MainForm::SvrStart(void)
     MenuStop  ->setEnabled(true);
     MenuExit  ->setEnabled(false);
     SetTrayIcon(1);
+}
+// urgent message server ----------------------------------------------------
+void MainForm::SvrUrgent(void)
+{
+    /* define the urgent protocol payload buffer, current now fixed 48 bytes for the 433 more stable working under this condition. */
+    unsigned char cmd[40] = { 0 };
+    /* this command is urgent land or rtl command, we pre-defined the command type as 0xA1. */
+    unsigned char cmd_type = 0xA1;
+    /* define the ip address of the vehicle, two bytes indicate two dot-decimal data. */
+    unsigned short address = 0;
+    /* define the vehicle dd and d5 protocol according to the vehicle protocol by daisy. */
+    urgent_prot_dd_d5_t upddt;
+    /* rw = 1 for write command, rw = 0 for read command. */
+    unsigned char rw = 1;
+    /* land command register value is 49. */
+    unsigned short reg = 49;
+    /* define the d5 protocol payload. */
+    unsigned char pld[24] = { 0 };
+    /* for current d5 protocol, the payload length is fixed 24. */
+    unsigned int pld_len = 24;
+    /* define the dialog object to receive the two dot-decimal data of the ip address. */
+    QString first_dot_decimal = LEID->text().section('.', 0, 0);
+    QString second_dot_decimal = LEID->text().section('.', 1, 1);
+    unsigned char first_dotdecimal = 0x00;
+    unsigned char second_dotdecimal = 0x00;
+    /* get the land mode from the dialog radio button. */
+    unsigned char land_flag = (unsigned char)Qbg.checkedId();
+    pld[0] = land_flag;
+
+    /* check the pattern of the dot-decimal data, only "int.int" pattern are valid, if empty we set the address as 0xFFFF. */
+    if(first_dot_decimal.isEmpty() || second_dot_decimal.isEmpty())
+    {
+        address = 0xFFFF;
+    }
+    else
+    {
+        /* get the two dot-decimal data. */
+        first_dotdecimal = 0xFF & first_dot_decimal.toInt(nullptr);
+        second_dotdecimal = 0xFF & second_dot_decimal.toInt(nullptr);
+        //address = ((first_dotdecimal << 8) & 0xFF00)|(second_dotdecimal & 0x00FF); // big endian.
+        /* since the vehicle use little endian, we assemble the input data "12.13" as 0x1312 for example. */
+        address = ((second_dotdecimal << 8) & 0xFF00)|(first_dotdecimal & 0x00FF); // little endian, for 433.
+    }
+
+    /* dd and d5 protocols assemble function. */
+    ugt_prot_dd_d5_assemble_default(address, rw, reg, pld, pld_len, (unsigned char *)&upddt);
+    memcpy_s(cmd, 40, &upddt, sizeof(upddt));
+    //memcpy(cmd, &upddt, sizeof(upddt));
+    //memset(cmd, 0, 48);
+    /* urgent protocol assemble and send. */
+    ugt_fill(cmd_type, cmd, 40);
 }
 // stop stream server -------------------------------------------------------
 void MainForm::SvrStop(void)
@@ -854,3 +946,63 @@ void MainForm::SaveOpt(void)
     settings.setValue("dirs/proxyaddress"  ,ProxyAddress  );
 }
 //---------------------------------------------------------------------------
+/* 2019-10-14 @tt, add for urgent led test through 433, the same as SvnUrgent command, please refer to the dd and d5 protocol. */
+void MainForm::on_BtnLedTest_clicked()
+{
+    unsigned char cmdtype = 0xA2;
+    unsigned char cmd[48] = { 0 };
+    unsigned char pld[24] = { 0 };
+    unsigned int pld_len = 24;
+    QString first_dot_decimal = LEID->text().section('.', 0, 0);
+    QString second_dot_decimal = LEID->text().section('.', 1, 1);
+    unsigned char first_dotdecimal = 0x00;
+    unsigned char second_dotdecimal = 0x00;
+    unsigned char red_value = 0;
+    unsigned char green_value = 0;
+    unsigned char blue_value = 0;
+    unsigned char led_info = 0;
+    unsigned char led_mode = 0xFF;
+    unsigned char color_id = 0;
+    unsigned short address = 0;
+    unsigned short reg = 29;
+    unsigned char rw = 1;
+    urgent_prot_dd_d5_t upddt;
+
+    if(first_dot_decimal.isEmpty() || second_dot_decimal.isEmpty())
+    {
+        address = 0xFFFF;
+    }
+    else
+    {
+        first_dotdecimal = 0xFF & first_dot_decimal.toInt(nullptr);
+        second_dotdecimal = 0xFF & second_dot_decimal.toInt(nullptr);
+        //address = ((first_dotdecimal << 8) & 0xFF00)|(second_dotdecimal & 0x00FF); // big endian.
+        address = ((second_dotdecimal << 8) & 0xFF00)|(first_dotdecimal & 0x00FF); // little endian, for 433.
+    }
+    red_value = 0xFF & LER->text().toInt(nullptr);
+    green_value = 0xFF & LEG->text().toInt(nullptr);
+    blue_value = 0xFF & LEB->text().toInt(nullptr);
+    pld[0] = led_info;
+    pld[1] = led_mode;
+    pld[2] = color_id;
+    pld[3] = red_value;
+    pld[4] = green_value;
+    pld[5] = blue_value;
+
+    ugt_prot_dd_d5_assemble_default(address, rw, reg, pld, pld_len, (unsigned char *)&upddt);
+
+    memcpy_s(cmd, 48, &upddt, sizeof(upddt));
+
+    ugt_fill(cmdtype, cmd, 48);
+}
+
+void MainForm::on_BtnOutput1_clicked()
+{
+
+}
+
+/* 2019-11-01 @tt, override the reject function to cancel all the keyboard event, TBD. */
+void MainForm::reject(void)
+{
+    // re-write the key-input event.
+}

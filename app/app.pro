@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 
-# 2019-11-18 @tt, only strsvr_qt application is needed.
+# 2019-08-14 @tt, only strsvr_qt is now used.
 #SUBDIRS= rtknavi_qt \
 #	 rtkget_qt \
 #         rtkplot_qt \
@@ -9,6 +9,6 @@ TEMPLATE = subdirs
 #         srctblbrows_qt \
 #         strsvr_qt \
 #         rtkconv_qt
-SUBDIRS= strsvr_qt
+SUBDIRS = strsvr_qt
 
 app.depends = src

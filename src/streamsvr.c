@@ -462,6 +462,17 @@ static void *strsvrthread(void *arg)
     svr->tick=tickget();
     tick_nmea=svr->tick-1000;
     
+    /* 2019-08-13 @tt, initialize the urgent message module. */
+    for(i = 1; i < svr->nstr; i++)
+    {
+        /* here we support that there is only one serial stream, and the stream is used for 433 module. */
+        if(svr->stream[i].type == STR_SERIAL)
+        {
+            ugt_initialize(&svr->stream[i]);
+            break;
+        }
+    }
+
     for (cyc=0;svr->state;cyc++) {
         tick=tickget();
         
@@ -490,6 +501,13 @@ static void *strsvrthread(void *arg)
             }
             unlock(&svr->lock);
         }
+
+        /* 2019-08-12 @tt, write urgent message to 433 node by uart. */
+        if(UGT_FILL == ugt_getstate())
+        {
+            ugt_send();
+        }
+
         for (i=1;i<svr->nstr;i++) {
             
             /* read message from output stream if connected */
@@ -519,6 +537,9 @@ static void *strsvrthread(void *arg)
     svr->npb=0;
     free(svr->buff); svr->buff=NULL;
     free(svr->pbuf); svr->pbuf=NULL;
+
+    /* 2019-08-13 @tt, thread has been destroyed. */
+    ugt_deinitialize();
     
     return 0;
 }

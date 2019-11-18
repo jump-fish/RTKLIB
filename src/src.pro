@@ -64,7 +64,9 @@ SOURCES += rtkcmn.c \
     rcv/tersus.c \
     rcv/comnav.c \
     rcv/swiftnav.c \
-    rcv/cmr.c
+    rcv/cmr.c \
+# 2019-08-12 @tt, create urgent message structure.
+    urgent.c
 
 HEADERS += rtklib.h
 

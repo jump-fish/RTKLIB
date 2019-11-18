@@ -5,6 +5,8 @@
 #include <QDialog>
 #include <QTimer>
 #include <QSystemTrayIcon>
+/* 2019-10-14 @tt, add for land radio button. */
+#include <QButtonGroup>
 
 #include "ui_svrmain.h"
 
@@ -30,6 +32,7 @@ public slots:
     void BtnOutput2Click();
     void BtnStartClick();
     void BtnStopClick();
+    void BtnUrgentClick();	// 2019-08-09 @tt urgent button click event;
     void Timer1Timer();
     void BtnOptClick();
     void Output1Change();
@@ -74,6 +77,9 @@ private:
     FtpOptDialog * ftpOptDialog;
     QTimer Timer1,Timer2;
 
+    /* 2019-10-14 @tt, create for land radio button. */
+    QButtonGroup Qbg;
+
     void SerialOpt(int index, int opt);
     void TcpOpt(int index, int opt);
     void FileOpt(int index, int opt);
@@ -81,12 +87,17 @@ private:
     void ShowMsg(const QString &msg);
     void SvrStart(void);
     void SvrStop(void);
+    void SvrUrgent(void);   // 2019-08-09 @tt urgent message command;
     void UpdateEnable(void);
     void SetTrayIcon(int index);
     void LoadOpt(void);
     void SaveOpt(void);
+    void reject(); // 2019-11-01 @tt re-write the keyboard event handler function, just do nothing, TBD.
 public:
     explicit MainForm(QWidget *parent=0);
+private slots:
+    void on_BtnLedTest_clicked();
+    void on_BtnOutput1_clicked();
 };
 //---------------------------------------------------------------------------
 #endif
